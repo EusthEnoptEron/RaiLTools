@@ -22,6 +22,21 @@ namespace RailTools
             Path = path;
             Content = content;
         }
+
+        public bool IsImage
+        {
+            get
+            {
+                return Flag != (byte)LWGFlags.String && Content.Length > 0;
+            }
+        }
+
+        public WCGImage ToWCG()
+        {
+            using(var memoryStream = new MemoryStream(Content)) {
+                return WCGImage.FromStream(memoryStream);
+            }
+        }
     }
 
     public enum LWGFlags

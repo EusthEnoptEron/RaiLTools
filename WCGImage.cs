@@ -51,6 +51,11 @@ namespace RailTools
             }
         }
 
+        public static WCGImage FromStream(Stream stream)
+        {
+            return new WCGImage(stream);
+        }
+
         public static WCGImage FromImage(string file)
         {
             using (var img = Image.FromFile(file))
