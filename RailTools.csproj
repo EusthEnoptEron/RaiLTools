@@ -7,8 +7,8 @@
     <ProjectGuid>{0432CDD0-54DB-40D2-B656-B93118E75EDB}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>RailTools</RootNamespace>
-    <AssemblyName>RailTools</AssemblyName>
+    <RootNamespace>RaiLTools</RootNamespace>
+    <AssemblyName>RaiLTools</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
