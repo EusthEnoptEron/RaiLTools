@@ -71,7 +71,7 @@ namespace RailTools
         {
             using (var fileStream = File.OpenRead(path))
             {
-                this.Decompress(fileStream);
+                this.Decode(fileStream);
             }
         }
         
@@ -80,7 +80,7 @@ namespace RailTools
             if (File.Exists(path)) File.Delete(path); // Truncate
             using (var fileStream = File.OpenWrite(path))
             {
-                Encompress(fileStream);
+                Encode(fileStream);
             }
         }
 
@@ -130,7 +130,7 @@ namespace RailTools
         /// <summary>
         /// Fills the object.
         /// </summary>
-        private void Decompress(Stream input)
+        private void Decode(Stream input)
         {
             using (var reader = new BinaryReader(input))
             {
@@ -183,7 +183,7 @@ namespace RailTools
 
         }
 
-        private void Encompress(Stream output)
+        private void Encode(Stream output)
         {
             using (var writer = new BinaryWriter(output))
             {
