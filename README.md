@@ -33,7 +33,7 @@ Only 32-Bit files are supported.
 To turn WCG files into any sort of file you want:
 
 ```csharp
-using (var wcg = WCGImage.FromFile("my_image.wcg"))
+using (var wcg = WcgImage.FromFile("my_image.wcg"))
 using (var img = wcg.ToImage())
 {
     img.Save("my_image.png");
@@ -44,7 +44,7 @@ The images can be turned back in a similar manner:
 
 ```csharp
 using (var img = Image.FromFile("my_image.png"))
-using (var wcg = WCGImage.FromImage(img))
+using (var wcg = WcgImage.FromImage(img))
 {
     wcg.Save("my_image.wcg");
 }
@@ -60,7 +60,7 @@ Putting aside whether or not they can be called "canvas" files, they store a lis
 You can load them like so:
 
 ```csharp
-var canvas = LWGCanvas.FromFile("my_canvas.lwg");
+var canvas = LwgCanvas.FromFile("my_canvas.lwg");
 foreach(var image in canvas.Values)
 {
     Console.WriteLine("IMG: {0} [x={1}, y={2}]", canvas.Path, canvas.X, canvas.Y);
@@ -70,7 +70,7 @@ foreach(var image in canvas.Values)
 You can also populate a (new) LWG file.
 
 ```csharp
-var canvas = new LWGCanvas("my_canvas.lwg");
-canvas.AddImage("content_wcg", WCGFile.FromFile("content_wcg.wcg"), 0, 0);
+var canvas = new LwgCanvas("my_canvas.lwg");
+canvas.AddImage("content_wcg", WcgFile.FromFile("content_wcg.wcg"), 0, 0);
 canvas.Save("my_new_canvas.lwg");
 ```
