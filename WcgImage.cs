@@ -16,6 +16,7 @@ namespace RaiLTools
     public class WcgImage : IDisposable
     {
         private Bitmap _Bitmap;
+        public const string MAGIC = "WG";
 
         private WcgImage() { }
         public WcgImage(Stream fileStream)

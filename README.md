@@ -66,7 +66,7 @@ You can load them like so:
 
 ```csharp
 var canvas = LwgCanvas.FromFile("my_canvas.lwg");
-foreach(var image in canvas.Values)
+foreach(var image in canvas.Entries)
 {
     Console.WriteLine("IMG: {0} [x={1}, y={2}]", canvas.Path, canvas.X, canvas.Y);
 }
@@ -76,6 +76,8 @@ You can also populate a (new) LWG file.
 
 ```csharp
 var canvas = new LwgCanvas("my_canvas.lwg");
-canvas.AddImage("content_wcg", WcgFile.FromFile("content_wcg.wcg"), 0, 0);
+canvas.ReplaceImage("content_wcg", WcgFile.FromFile("content_wcg.wcg"), 0, 0);
 canvas.Save("my_new_canvas.lwg");
 ```
+
+The class also has a few helper methods that makes it easy to extract and import entrie folders.
