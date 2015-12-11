@@ -1,4 +1,4 @@
-﻿using RailTools.Tools;
+﻿using RaiLTools.Tools;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -7,7 +7,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace RailTools
+namespace RaiLTools
 {
     /// <summary>
     /// Represents an image file in the WCG format.

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RailTools.Tools
+namespace RaiLTools.Tools
 {
     /// <summary>
     /// Wrapper for <see cref="Stream"/>s that allows bit-level reads and writes.

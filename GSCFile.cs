@@ -1,4 +1,4 @@
-﻿using RailTools.Tools;
+﻿using RaiLTools.Tools;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RailTools
+namespace RaiLTools
 {
     public class GscFile
     {

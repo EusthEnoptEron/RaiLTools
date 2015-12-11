@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RailTools.Tools
+namespace RaiLTools.Tools
 {
     public class BigEndianBinaryReader : BinaryReader
     {

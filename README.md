@@ -8,7 +8,12 @@ A few notes for using the library.
 
 ### Archive Files (.xfl)
 
-TODO
+```csharp
+var archive = XflArchive.FromFile("archive.xfl");
+archive.CreateEntry("newFile.wcg", File.ReadAllBytes("my.wcg"));
+archive.Save("archive2.xfl");
+archive.ExtractToDirectory("archive_extracted");)
+```
 
 ### Scenario Files (.gsc)
 
