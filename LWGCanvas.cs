@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace RailTools
 {
-    public class LWGItem
+    public class LwgEntry
     {
         public string Path;
         public byte[] Content;
@@ -16,8 +16,8 @@ namespace RailTools
         public int Y;
         public byte Flag;
         
-        internal LWGItem() { }
-        public LWGItem(string path, byte[] content)
+        internal LwgEntry() { }
+        public LwgEntry(string path, byte[] content)
         {
             Path = path;
             Content = content;
@@ -31,10 +31,10 @@ namespace RailTools
             }
         }
 
-        public WCGImage ToWCG()
+        public WcgImage ToWCG()
         {
             using(var memoryStream = new MemoryStream(Content)) {
-                return WCGImage.FromStream(memoryStream);
+                return WcgImage.FromStream(memoryStream);
             }
         }
     }
@@ -47,7 +47,7 @@ namespace RailTools
         String = 56
     }
 
-    public class LWGCanvas : Dictionary<string, LWGItem>
+    public class LwgCanvas : Dictionary<string, LwgEntry>
     {
         private const string _Magic = "LG\x01\x00";
         private Encoding _ShiftJIS = Encoding.GetEncoding(932);
@@ -55,19 +55,19 @@ namespace RailTools
         public int Height = 0;
 
 
-        private class InternalLWGItem : LWGItem
+        private class InternalLwgEntry : LwgEntry
         {
             public int Offset;
             public int Size;
         }
 
-        public LWGCanvas(int width, int height)
+        public LwgCanvas(int width, int height)
         {
             this.Width = width;
             this.Height = height;
         }
 
-        public LWGCanvas(string path)
+        public LwgCanvas(string path)
         {
             using (var fileStream = File.OpenRead(path))
             {
@@ -84,12 +84,12 @@ namespace RailTools
             }
         }
 
-        public static LWGCanvas FromFile(string path)
+        public static LwgCanvas FromFile(string path)
         {
-            return new LWGCanvas(path);
+            return new LwgCanvas(path);
         }
 
-        public void AddImage(string path, WCGImage image, int? x = null, int? y = null)
+        public void AddImage(string path, WcgImage image, int? x = null, int? y = null)
         {
             //Width = Math.Max(image.Width, Width);
             //Height = Math.Max(image.Height, Height);
@@ -118,7 +118,7 @@ namespace RailTools
                 }
             }
 
-            this[path] = new LWGItem(path, data)
+            this[path] = new LwgEntry(path, data)
             {
                 X = x ?? 0,
                 Y = y ?? 0,
@@ -152,7 +152,7 @@ namespace RailTools
                 // Parse file table
                 for (int i = 0; i < fileCount; i++)
                 {
-                    var item = new InternalLWGItem();
+                    var item = new InternalLwgEntry();
 
                     item.X = reader.ReadInt32();
                     item.Y = reader.ReadInt32();
@@ -170,7 +170,7 @@ namespace RailTools
                 }
 
                 // Extract actual data
-                foreach (var item in this.Values.OfType<InternalLWGItem>() )
+                foreach (var item in this.Values.OfType<InternalLwgEntry>() )
                 {
                     input.Seek(item.Offset, SeekOrigin.Begin);
                     item.Content = reader.ReadBytes(item.Size);

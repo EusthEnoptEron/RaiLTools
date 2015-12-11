@@ -45,7 +45,7 @@ namespace RailTools
             }
         }
 
-        public static TransFile FromGSC(GSCFile file)
+        public static TransFile FromGSC(GscFile file)
         {
             var trans = new TransFile();
             trans.PopulateFrom(file);
@@ -58,15 +58,15 @@ namespace RailTools
         /// </summary>
         /// <param name="refGsc">Path to the reference GSC.</param>
         /// <returns></returns>
-        public GSCFile ToGSC(string refGsc)
+        public GscFile ToGSC(string refGsc)
         {
-            var gsc = GSCFile.FromFile(refGsc);
+            var gsc = GscFile.FromFile(refGsc);
             Populate(gsc);
 
             return gsc;
         }
 
-        public void PopulateFrom(GSCFile file)
+        public void PopulateFrom(GscFile file)
         {
             Strings = file.Strings.ToList();
         }
@@ -122,7 +122,7 @@ namespace RailTools
             Strings.Add(string.Join("^n", dynLines));
         }
 
-        public void Populate(GSCFile file)
+        public void Populate(GscFile file)
         {
             for (int i = 0; i < Strings.Count && i < file.Strings.Length; i++)
             {
@@ -236,7 +236,7 @@ namespace RailTools
 
         public static TransFile FromGSC(string file)
         {
-            return TransFile.FromGSC(GSCFile.FromFile(file));
+            return TransFile.FromGSC(GscFile.FromFile(file));
         }
     }
 }

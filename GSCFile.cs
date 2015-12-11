@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace RailTools
 {
-    public class GSCFile
+    public class GscFile
     {
         private Encoding JIS = Encoding.GetEncoding("shift_jis");
 
@@ -28,8 +28,8 @@ namespace RailTools
 
         byte[] EndSequence;
 
-        private GSCFile() { }
-        private GSCFile(Stream inputStream)
+        private GscFile() { }
+        private GscFile(Stream inputStream)
         {
             using (var reader = new BigEndianBinaryReader(inputStream))
             {
@@ -91,9 +91,9 @@ namespace RailTools
             }
         }
 
-        public static GSCFile FromStream(Stream inputStream)
+        public static GscFile FromStream(Stream inputStream)
         {
-            return new GSCFile(inputStream);
+            return new GscFile(inputStream);
         }
 
         public void Save(string path)
@@ -163,11 +163,11 @@ namespace RailTools
             }
         }
 
-        public static GSCFile FromFile(string path)
+        public static GscFile FromFile(string path)
         {
             using (var stream = File.OpenRead(path))
             {
-                return GSCFile.FromStream(stream);
+                return GscFile.FromStream(stream);
             }
         }
     }

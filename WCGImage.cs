@@ -13,12 +13,12 @@ namespace RailTools
     /// Represents an image file in the WCG format.
     /// Internally, the image is managed as a System.Drawing.Bitmap.
     /// </summary>
-    public class WCGImage : IDisposable
+    public class WcgImage : IDisposable
     {
         private Bitmap _Bitmap;
 
-        private WCGImage() { }
-        public WCGImage(Stream fileStream)
+        private WcgImage() { }
+        public WcgImage(Stream fileStream)
         {
             Parse(fileStream);
         }
@@ -43,24 +43,24 @@ namespace RailTools
         /// </summary>
         /// <param name="file"></param>
         /// <returns></returns>
-        public static WCGImage FromFile(string file)
+        public static WcgImage FromFile(string file)
         {
             using (var stream = File.Open(file, FileMode.Open, FileAccess.Read))
             {
-                return new WCGImage(stream);
+                return new WcgImage(stream);
             }
         }
 
-        public static WCGImage FromStream(Stream stream)
+        public static WcgImage FromStream(Stream stream)
         {
-            return new WCGImage(stream);
+            return new WcgImage(stream);
         }
 
-        public static WCGImage FromImage(string file)
+        public static WcgImage FromImage(string file)
         {
             using (var img = Image.FromFile(file))
             {
-                return WCGImage.FromImage(img);
+                return WcgImage.FromImage(img);
             }
         }
 
@@ -69,9 +69,9 @@ namespace RailTools
         /// </summary>
         /// <param name="img"></param>
         /// <returns></returns>
-        public static WCGImage FromImage(Image img) {
+        public static WcgImage FromImage(Image img) {
             //var pxl = img.PixelFormat;
-            return new WCGImage()
+            return new WcgImage()
             {
                 _Bitmap = new Bitmap(img)
             };
