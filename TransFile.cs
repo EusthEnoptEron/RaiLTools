@@ -77,33 +77,71 @@ namespace RaiLTools
             string ja = "";
             string en = "";
             Strings.Clear();
+            StringBuilder currentString = new StringBuilder();
+
             using (var reader = new StreamReader(stream))
             {
-                while (!reader.EndOfStream)
+                var lines = reader.ReadToEnd().Split('\n');
+
+                string text;
+                bool isJapanese;
+                int offset = 0;
+
+                string jpText = "";
+                while (ReadSection(lines, ref offset, out text, out isJapanese))
                 {
-                    string line = reader.ReadLine();
-                    if (line.StartsWith("#"))
+                    if (isJapanese) jpText = text;
+                    else
                     {
-                        ja = line.Substring(1);
-                    }
-                    else if (line.StartsWith(">"))
-                    {
-                        en = Regex.Replace(line.Substring(1), @"""(.+?)""", "“$1”");
-                        if (en.Length == 0 && ja.Length > 0)
-                        {
-                            Strings.Add(ConvertToInternal(ja));
-                            ja = "";
-                        }
+                        // English text
+                        if (text.Trim() == "" && jpText.Trim() != "")
+                            Strings.Add(jpText);
                         else
-                        {
-                            AddWithWordWrapping(ConvertToInternal(en));
-                            en = "";
-                            ja = "";
-                        }
+                            AddWithWordWrapping(text);
                     }
                 }
             }
         }
+
+        private bool ReadSection(string[] text, ref int offset, out string result, out bool japanese)
+        {
+            bool reading = false;
+            result = "";
+            japanese = false;
+            var output = new List<string>();
+            bool eof = true;
+
+            for (; offset < text.Length; offset++)
+            {
+                var line = text[offset];
+                bool ja = line.StartsWith("#");
+                bool en = line.StartsWith(">");
+                bool isSectionStart = ja || en;
+
+                if(isSectionStart) {
+                    if(reading) {
+                        eof = false;
+                        break;
+                    } else {
+                        japanese = ja;
+                        reading = true;
+
+                        line = line.Substring(1);
+                    }
+                }
+
+                if (reading)
+                {
+                    //en = Regex.Replace(line.Substring(1), @"""(.+?)""", "“$1”");
+
+                    output.Add( ConvertToInternal(line) );
+                }
+            }
+            result = string.Join("^n", output);
+
+            return !eof;
+        }
+
 
         private string ReplaceUmlauts(string str)
         {
@@ -154,11 +192,15 @@ namespace RaiLTools
 
         private string ConvertToExternal(string str)
         {
-            return str.Replace("　", "^r").Replace("^", "\\");
+            str = str.Replace("　", "^t").Replace("^n", "\n").Replace("^", "\\");
+            str = Regex.Replace(str, @"^\\t", " ", RegexOptions.Multiline);
+            return str;
         }
         private string ConvertToInternal(string str)
         {
-            return str.Replace("\\", "^").Replace("^r", "　");
+            str = str.Replace("\r", ""); // Don't like those.
+            str = Regex.Replace(str, @"^ ", "\\t", RegexOptions.Multiline);
+            return str.Replace("\\", "^").Replace("^t", "　");
         }
 
         private string GetVisibleString(string str)
