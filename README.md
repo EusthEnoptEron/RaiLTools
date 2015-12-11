@@ -70,7 +70,7 @@ You can load them like so:
 var canvas = LwgCanvas.FromFile("my_canvas.lwg");
 foreach(var image in canvas.Entries)
 {
-    Console.WriteLine("IMG: {0} [x={1}, y={2}]", canvas.Path, canvas.X, canvas.Y);
+    Console.WriteLine("IMG: {0} [x={1}, y={2}]", item.Path, item.X, item.Y);
 }
 ```
 
