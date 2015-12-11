@@ -91,12 +91,12 @@ namespace RaiLTools
                         en = Regex.Replace(line.Substring(1), @"""(.+?)""", "“$1”");
                         if (en.Length == 0 && ja.Length > 0)
                         {
-                            Strings.Add(ja);
+                            Strings.Add(ConvertToInternal(ja));
                             ja = "";
                         }
                         else
                         {
-                            AddWithWordWrapping(en);
+                            AddWithWordWrapping(ConvertToInternal(en));
                             en = "";
                             ja = "";
                         }
@@ -146,10 +146,19 @@ namespace RaiLTools
             {
                 foreach (string str in Strings)
                 {
-                    writer.WriteLine("#" + str);
+                    writer.WriteLine("#" + ConvertToExternal(str));
                     writer.WriteLine(">");
                 }
             }
+        }
+
+        private string ConvertToExternal(string str)
+        {
+            return str.Replace("　", "^r").Replace("^", "\\");
+        }
+        private string ConvertToInternal(string str)
+        {
+            return str.Replace("\\", "^").Replace("^r", "　");
         }
 
         private string GetVisibleString(string str)
