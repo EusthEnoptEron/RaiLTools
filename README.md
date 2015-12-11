@@ -82,4 +82,4 @@ canvas.ReplaceImage("content_wcg", WcgFile.FromFile("content_wcg.wcg"), 0, 0);
 canvas.Save("my_new_canvas.lwg");
 ```
 
-The class also has a few helper methods that makes it easy to extract and import entrie folders.
+The class also has a few helper methods that make it easy to extract and import entire folders.
