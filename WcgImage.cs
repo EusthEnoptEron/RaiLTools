@@ -11,7 +11,7 @@ namespace RaiLTools
 {
     /// <summary>
     /// Represents an image file in the WCG format.
-    /// Internally, the image is managed as a System.Drawing.Bitmap.
+    /// Internally, the image is managed as a <see cref="System.Drawing.Bitmap"/>.
     /// </summary>
     public class WcgImage : IDisposable
     {
@@ -19,11 +19,19 @@ namespace RaiLTools
         public const string MAGIC = "WG";
 
         private WcgImage() { }
+
+        /// <summary>
+        /// Decodes a WCG stream.
+        /// </summary>
+        /// <param name="fileStream">Stream to decode.</param>
         public WcgImage(Stream fileStream)
         {
             Parse(fileStream);
         }
 
+        /// <summary>
+        /// Gets the width of the image.
+        /// </summary>
         public int Width
         {
             get
@@ -31,6 +39,10 @@ namespace RaiLTools
                 return _Bitmap.Width;
             }
         }
+
+        /// <summary>
+        /// Gets the height of the image.
+        /// </summary>
         public int Height
         {
             get
@@ -42,8 +54,8 @@ namespace RaiLTools
         /// <summary>
         /// Creates a new WCG object from a WCG file.
         /// </summary>
-        /// <param name="file"></param>
-        /// <returns></returns>
+        /// <param name="file">Path where the file is stored at.</param>
+        /// <returns>WcgImage representation of the image.</returns>
         public static WcgImage FromFile(string file)
         {
             using (var stream = File.Open(file, FileMode.Open, FileAccess.Read))
@@ -52,11 +64,22 @@ namespace RaiLTools
             }
         }
 
+        /// <summary>
+        /// Decodes a WCG stream.
+        /// </summary>
+        /// <param name="stream">Stream to decode.</param>
+        /// <returns>WcgImage representation of the image.</returns>
         public static WcgImage FromStream(Stream stream)
         {
             return new WcgImage(stream);
         }
 
+
+        /// <summary>
+        /// Converts a common image file (<see cref="System.Drawing.Image"/> backend) into a WcgImage.
+        /// </summary>
+        /// <param name="file">Path to the image file.</param>
+        /// <returns>WcgImage representation of the image.s</returns>
         public static WcgImage FromImage(string file)
         {
             using (var img = Image.FromFile(file))
@@ -78,10 +101,55 @@ namespace RaiLTools
             };
         }
 
+        /// <summary>
+        /// Turns this WCG image into a bitmap.
+        /// </summary>
+        /// <returns></returns>
         public Image ToImage()
         {
             return new Bitmap(_Bitmap);
         }
+
+
+        public void Save(string path)
+        {
+            path = Path.GetFullPath(path);
+            if (File.Exists(path)) File.Delete(path);
+
+            if (!Directory.Exists(Path.GetDirectoryName(path)))
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+            using (var stream = File.OpenWrite(path))
+            {
+                Save(stream);
+            }
+
+        }
+
+        public void Save(Stream stream)
+        {
+            using (var writer = new BinaryWriter(stream))
+            {
+                /* WRITE FILE HEADER */
+                writer.Write(new char[] { 'W', 'G' }); // Header
+                writer.Write(new byte[] { 0x71, 0x02 }); // Dummy
+
+                writer.Write((ushort)32); // Depth
+                writer.Write(new byte[] { 0, 0x40 }); // Dummy
+                writer.Write(_Bitmap.Width);
+                writer.Write(_Bitmap.Height);
+
+                var imgData = _Bitmap.LockBits(new Rectangle(0, 0, _Bitmap.Width, _Bitmap.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
+                var data = new byte[_Bitmap.Width * _Bitmap.Height * 4];
+                Marshal.Copy(imgData.Scan0, data, 0, data.Length);
+                _Bitmap.UnlockBits(imgData);
+
+                Encompress(writer, true, data);
+                Encompress(writer, false, data);
+
+                writer.Flush();
+            }
+        }
+
 
         private void Parse(Stream fileStream)
         {
@@ -115,44 +183,6 @@ namespace RaiLTools
             }
         }
 
-        public void Save(string path)
-        {
-            path = Path.GetFullPath(path);
-            if (File.Exists(path)) File.Delete(path);
-            
-            if (!Directory.Exists(Path.GetDirectoryName(path)))
-                Directory.CreateDirectory(Path.GetDirectoryName(path));
-            using (var stream = File.OpenWrite(path))
-            {
-                Save(stream);
-            }
-           
-        }
-
-        public void Save(Stream stream)
-        {
-            using (var writer = new BinaryWriter(stream))
-            {
-                /* WRITE FILE HEADER */
-                writer.Write(new char[] { 'W', 'G' }); // Header
-                writer.Write(new byte[] { 0x71, 0x02 }); // Dummy
-
-                writer.Write((ushort)32); // Depth
-                writer.Write(new byte[] { 0, 0x40 }); // Dummy
-                writer.Write(_Bitmap.Width);
-                writer.Write(_Bitmap.Height);
-
-                var imgData = _Bitmap.LockBits(new Rectangle(0, 0, _Bitmap.Width, _Bitmap.Height), ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-                var data = new byte[_Bitmap.Width * _Bitmap.Height * 4];
-                Marshal.Copy(imgData.Scan0, data, 0, data.Length);
-                _Bitmap.UnlockBits(imgData);
-
-                Encompress(writer, true, data);
-                Encompress(writer, false, data);
-
-                writer.Flush();
-            }
-        }
 
         private void Encompress(BinaryWriter writer, bool low, byte[] data)
         {

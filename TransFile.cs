@@ -7,27 +7,25 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Media;
 
 namespace RaiLTools
 {
+    /// <summary>
+    /// Provides a way to convert GSC files into translatable text files and to turn them back.
+    /// Generally requires a "reference" gsc to exist, which stores stuff like sound effect, etc.
+    /// </summary>
     public class TransFile
     {
-        private List<string> Strings = new List<string>();
+        private List<string> _Strings = new List<string>();
         //private String ReferenceText = "人々の営みの息吹の中に、届く筈もないのに、";
-        private String ReferenceText = "more impressive and lustrous than this p";
-        //private String ReferenceText2 = "　However, this story's start lies elsew";
-        //private String ReferenceText3 = "of a beautifully strong, dark green―eas";
-        //private String ReferenceText4 = "town's night, despite all the lights and";
-        //private String ReferenceText5 = "　Black wings he saw, formed by layers of";
-        //private Font Font = new Font("ＭＳ ゴシック", 12f);
-        private Font Font = new Font("ＭＳ ゴシック", 12f);
-        private double LineLength = 0;
+        private String _ReferenceText = "more impressive and lustrous than this p";
+        private Font _Font = new Font("ＭＳ ゴシック", 12f);
+        private double _LineLength = 0;
 
         private TransFile()
         {
-            LineLength = MeasureString(ReferenceText);
+            _LineLength = MeasureString(_ReferenceText);
             /*double l2 = MeasureString(ReferenceText2);
             double l3 = MeasureString(ReferenceText3);
             double l4 = MeasureString(ReferenceText4);
@@ -35,6 +33,13 @@ namespace RaiLTools
             */
         }
 
+        #region Public API
+
+        /// <summary>
+        /// Loads a translation file from the file system.
+        /// </summary>
+        /// <param name="transFile">The file to be opened for reading.</param>
+        /// <returns>The instance of the requested translation file.</returns>
         public static TransFile FromFile(string transFile)
         {
             using (var fileStream = File.OpenRead(transFile))
@@ -45,6 +50,11 @@ namespace RaiLTools
             }
         }
 
+        /// <summary>
+        /// Converts a GSC file (internal representation) into a TransFile (easily translatable). 
+        /// </summary>
+        /// <param name="file">The file to be converted.</param>
+        /// <returns>The TransFile representation of the GSC file.</returns>
         public static TransFile FromGSC(GscFile file)
         {
             var trans = new TransFile();
@@ -54,10 +64,20 @@ namespace RaiLTools
         }
 
         /// <summary>
-        /// 
+        /// Converts a GSC file (internal representation) into a TransFile (easily translatable). 
+        /// </summary>
+        /// <param name="file">The file to be converted.</param>
+        /// <returns>The TransFile representation of the GSC file.</returns>
+        public static TransFile FromGSC(string file)
+        {
+            return TransFile.FromGSC(GscFile.FromFile(file));
+        }
+
+        /// <summary>
+        /// Turns this translation file into a GSC file that can be used in the game.
         /// </summary>
         /// <param name="refGsc">Path to the reference GSC.</param>
-        /// <returns></returns>
+        /// <returns>The GSC representation of this translation file.</returns>
         public GscFile ToGSC(string refGsc)
         {
             var gsc = GscFile.FromFile(refGsc);
@@ -66,17 +86,63 @@ namespace RaiLTools
             return gsc;
         }
 
-        public void PopulateFrom(GscFile file)
+
+
+        /// <summary>
+        /// Writes the textual representation to the file system.
+        /// </summary>
+        /// <param name="location">Where to save the file to.</param>
+        public void Save(string location)
         {
-            Strings = file.Strings.ToList();
+            if (File.Exists(location)) File.Delete(location);
+
+            using (var stream = File.OpenWrite(location))
+            {
+                Save(stream);
+            }
         }
 
-        public void PopulateFrom(Stream stream)
+        /// <summary>
+        /// Writes the textual representation to a stream.
+        /// </summary>
+        /// <param name="output">Stream to write to.</param>
+        public void Save(Stream output)
+        {
+            using (var writer = new StreamWriter(output))
+            {
+                foreach (string str in _Strings)
+                {
+                    writer.WriteLine("#" + ConvertToExternal(str));
+                    writer.WriteLine(">");
+                }
+            }
+        }
+
+
+        #endregion
+
+
+        #region The heavy lifting
+
+        /// <summary>
+        /// Loads the strings defined by a GSC file into this translation file.
+        /// </summary>
+        /// <param name="file"></param>
+        internal void PopulateFrom(GscFile file)
+        {
+            _Strings = file.Strings.ToList();
+        }
+
+        /// <summary>
+        /// Parses a translation file and loads the strings into this instance.
+        /// </summary>
+        /// <param name="stream"></param>
+        internal void PopulateFrom(Stream stream)
         {
 
             string ja = "";
             string en = "";
-            Strings.Clear();
+            _Strings.Clear();
             StringBuilder currentString = new StringBuilder();
 
             using (var reader = new StreamReader(stream))
@@ -95,7 +161,7 @@ namespace RaiLTools
                     {
                         // English text
                         if (text.Trim() == "" && jpText.Trim() != "")
-                            Strings.Add(jpText);
+                            _Strings.Add(jpText);
                         else
                             AddWithWordWrapping(text);
                     }
@@ -103,6 +169,26 @@ namespace RaiLTools
             }
         }
 
+        /// <summary>
+        /// Populates a GSC file with the strings stored in this translation file.
+        /// </summary>
+        /// <param name="file"></param>
+        internal void Populate(GscFile file)
+        {
+            for (int i = 0; i < _Strings.Count && i < file.Strings.Length; i++)
+            {
+                file.Strings[i] = _Strings[i];
+            }
+        }
+
+        /// <summary>
+        /// Reads a section from a translation file (a section starts at ">" or "#" and ends with EOF or the next section)
+        /// </summary>
+        /// <param name="text">Lines of text.</param>
+        /// <param name="offset">Current offset (to the lines).</param>
+        /// <param name="result">Target for the section text to be stored.</param>
+        /// <param name="japanese">Whether or not the section is Japanese (defined by the sign used to declare the section).</param>
+        /// <returns>Whether or not there are more sections to read.</returns>
         private bool ReadSection(string[] text, ref int offset, out string result, out bool japanese)
         {
             bool reading = false;
@@ -142,6 +228,9 @@ namespace RaiLTools
             return !eof;
         }
 
+        #endregion
+
+        #region Word Wrapping stuff (mostly old code)
 
         private string ReplaceUmlauts(string str)
         {
@@ -154,40 +243,10 @@ namespace RaiLTools
             List<string> dynLines = new List<string>();
             foreach (string line in lines)
             {
-                dynLines.Add(ReplaceUmlauts(string.Join("^n", WrapText(line, LineLength, Font.FontFamily.Name, Font.Size))));
+                dynLines.Add(ReplaceUmlauts(string.Join("^n", WrapText(line, _LineLength, _Font.FontFamily.Name, _Font.Size))));
             }
 
-            Strings.Add(string.Join("^n", dynLines));
-        }
-
-        public void Populate(GscFile file)
-        {
-            for (int i = 0; i < Strings.Count && i < file.Strings.Length; i++)
-            {
-                file.Strings[i] = Strings[i];
-            }
-        }
-
-        public void Save(string location)
-        {
-            if (File.Exists(location)) File.Delete(location);
-
-            using (var stream = File.OpenWrite(location))
-            {
-                Save(stream);
-            }
-        }
-
-        public void Save(Stream output)
-        {
-            using (var writer = new StreamWriter(output))
-            {
-                foreach (string str in Strings)
-                {
-                    writer.WriteLine("#" + ConvertToExternal(str));
-                    writer.WriteLine(">");
-                }
-            }
+            _Strings.Add(string.Join("^n", dynLines));
         }
 
         private string ConvertToExternal(string str)
@@ -213,7 +272,7 @@ namespace RaiLTools
             FormattedText formatted = new FormattedText(str,
                    CultureInfo.CurrentCulture,
                    System.Windows.FlowDirection.LeftToRight,
-                   new Typeface(Font.FontFamily.Name), Font.Size, System.Windows.Media.Brushes.Black);
+                   new Typeface(_Font.FontFamily.Name), _Font.Size, System.Windows.Media.Brushes.Black);
 
             return formatted.Width;
         }
@@ -285,9 +344,9 @@ namespace RaiLTools
         }
 
 
-        public static TransFile FromGSC(string file)
-        {
-            return TransFile.FromGSC(GscFile.FromFile(file));
-        }
+
+        #endregion
+
+
     }
 }
