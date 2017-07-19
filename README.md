@@ -1,6 +1,6 @@
 # RaiLTools
 
-Quick 'n dirty .NET library for working with Liar-soft's and raiL-soft's projects. Only tested with Albatross Log.
+Quick 'n dirty .NET library for working with Liar-soft's and raiL-soft's projects. Mainly tested with Albatross Log.
 
 ![Saya meets Albatross](https://raw.githubusercontent.com/EusthEnoptEron/RaiLTools/master/Examples/albatross_edited.jpg "You can do cool stuff.")
 
