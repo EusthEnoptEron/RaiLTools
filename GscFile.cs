@@ -8,6 +8,20 @@ using System.Threading.Tasks;
 
 namespace RaiLTools
 {
+    //abstract class CommandType
+    //{
+    // Text: [x51 x00 x00 x00] [int32 (Voice?)] [int32] [int32] [int32] [int16 (line number)] [int16] [x01 00 00 00]
+    // ????: [xC8 00] [int32 ???] [int32 x 10]
+    // Event: 1A 00 14 00 [int16 ev num] [int16]
+    // Sprite: 1A 00 FF 00 [int32 (on/off? 0 = on, 1 = 0ff)] [int32 (pos?)] [int16 evbu number]
+    // Cutin: 1A 00 1E 00 [int32] 0A 00 00 00 [int16 (evcut number)]
+    // SFX: 3E 00 ... (e.g. 3E 00 36 0C 00 00 3F 00 00 00 00 00 00 00 00 00 00 00 00 00 )
+    // Shake: 17 00 ... (e.g. 17 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 )
+    // Fade?: C8 00 ... (e.g. C8 00 40 16 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 )
+    // 
+    //}
+
+
     public class GscFile
     {
         private Encoding JIS = Encoding.GetEncoding("shift_jis");
@@ -22,7 +36,7 @@ namespace RaiLTools
         public int Unknown3;
         public int Unknown4;
 
-        byte[] CommandSection;
+        public byte[] CommandSection;
         int[] StringLengths;
         public string[] Strings;
 
@@ -49,7 +63,6 @@ namespace RaiLTools
 
                 // -- STRING DECLARATION
                 reader.ReadBytes(8); // Skip first 8 bytes
-
                 StringLengths = new int[StringDeclarationLength / 4 - 2 + 1];
                 Strings = new string[StringLengths.Length];
 
@@ -166,6 +179,14 @@ namespace RaiLTools
         public static GscFile FromFile(string path)
         {
             using (var stream = File.OpenRead(path))
+            {
+                return GscFile.FromStream(stream);
+            }
+        }
+
+        public static GscFile FromBytes(byte[] bytes)
+        {
+            using (var stream = new MemoryStream(bytes))
             {
                 return GscFile.FromStream(stream);
             }

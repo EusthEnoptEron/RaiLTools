@@ -24,7 +24,7 @@ namespace RaiLTools
         /// Decodes a WCG stream.
         /// </summary>
         /// <param name="fileStream">Stream to decode.</param>
-        public WcgImage(Stream fileStream)
+        private WcgImage(Stream fileStream)
         {
             Parse(fileStream);
         }
@@ -72,6 +72,19 @@ namespace RaiLTools
         public static WcgImage FromStream(Stream stream)
         {
             return new WcgImage(stream);
+        }
+
+        /// <summary>
+        /// Decodes a WCG image from its byte content.
+        /// </summary>
+        /// <param name="byteArray"></param>
+        /// <returns></returns>
+        public static WcgImage FromBytes(byte[] byteArray)
+        {
+            using (var stream = new MemoryStream(byteArray))
+            {
+                return FromStream(stream);
+            }
         }
 
 
