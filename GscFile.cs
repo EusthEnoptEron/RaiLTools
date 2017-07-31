@@ -70,8 +70,12 @@ namespace RaiLTools
                 {
                     StringLengths[i] = reader.ReadInt32();
                 }
+
                 // We need to determine the last one ourselves
-                StringLengths[StringLengths.Length - 1] = StringDefinitionLength;
+                if (StringLengths.Length > 0)
+                {
+                    StringLengths[StringLengths.Length - 1] = StringDefinitionLength;
+                }
 
                 reader.ReadByte(); // Skip 0 byte
 
