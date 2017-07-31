@@ -33,6 +33,22 @@ var gscFile = TransFile.FromFile("my_text.txt").ToGSC("my_text.gsc");
 gscFile.Save("my_new_text.gsc");
 ```
 
+#### Reading from Scenario Files
+
+It is possible to a certain degree to read the commands in a scenario file using the `CommandsTranslator` or the `CommandsTokenizer`.
+
+```csharp
+var scenario = GscFile.FromFile("my_text.gsc");
+var translator = new CommandsTranslator(scenario);
+
+foreach(var command in translator.GetCommands()) {
+	Console.WriteLine(command);
+}
+```
+
+The `CommandsTranslator` will try to map the tokens emitted by the tokenizer to subclasses of `ICommand`. If it fails, it will simply create `UnknownCommand` instances. Currently mapped: sprite images, background image and text. 
+
+
 ### Image Files (.wcg)
 
 Only 32-Bit files are supported.
