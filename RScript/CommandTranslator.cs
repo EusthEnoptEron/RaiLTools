@@ -18,6 +18,12 @@ namespace RaiLTools.RScript
             Event = 0x14, // (index, ?)
             Text = 0x51, // (?, voiceIndex, ?, ?, textIndex, ?)
             Sprite = 0xff, // (mode, position, imageNo, ?, ?), mode = 0 -> SET(position, image), mode = 1 -> CLEAR(position), mode = 2 -> ACTIVATE(position), position: [1, 6] (left -> right)
+            Jump = 0x05, // (offset [from command block start])
+            JumpUnless = 0x03,
+            Add = 0xAA00,
+            Assign = 0xF100,
+            GreaterEquals = 0x5400,
+            And = 0x3500
         }
 
         private CommandTokenizer _Tokenizer;
@@ -59,6 +65,27 @@ namespace RaiLTools.RScript
                     case Commands.Text:
                         yield return new TextCommand(token);
                         break;
+                    case Commands.Jump:
+                        yield return new JumpCommand(token);
+                        break;
+                    case Commands.Add:
+                        yield return new AddCommand(token);
+                        break;
+                    case Commands.And:
+                        yield return new AndCommand(token);
+                        break;
+                    case Commands.Assign:
+                        yield return new AssignCommand(token);
+                        break;
+                    case Commands.GreaterEquals:
+                        yield return new GreaterEqualsCommand(token);
+                        break;
+                    case Commands.JumpUnless:
+                        yield return new JumpUnlessCommand(token);
+                        break;
+                    default:
+                        yield return new UnknownCommand(token);
+                        break;
                 }
             }
         }
@@ -70,9 +97,16 @@ namespace RaiLTools.RScript
             ));
         }
 
+        public string GetTranslatedDebugString()
+        {
+            return string.Join("\n", GetCommands().Select(command =>
+                command.ToString()
+            ));
+        }
+
         private string TokenParamsToString(CommandToken token)
         {
-            string concatenation = string.Join(" ", token.Params.Select(p => p.ToString("x4")))
+            string concatenation = string.Join(" ", token.Params.Select(p => "0x" + p.ToString("x")))
                         + " (" + string.Join(", ", token.Params.Select(p => p.ToString())) + ")";
 
             if (token.Value == (int)Commands.Text)

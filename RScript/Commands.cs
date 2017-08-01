@@ -42,12 +42,178 @@ namespace RaiLTools.RScript
         {
             throw new NotImplementedException();
         }
+
+        public override string ToString()
+        {
+            return string.Format("??? ({0})", Token.Value.ToString("x2"));
+        }
+    }
+
+    public class JumpCommand : ICommand
+    {
+        public int Index { get; set; }
+
+        /// <summary>
+        /// Gets or sets at which offset the program continues.
+        /// </summary>
+        public int Offset { get; set; }
+        public JumpCommand(CommandToken token)
+        {
+            Index = token.Index;
+            Offset = token.Params[0];
+        }
+            
+        public byte[] ToBytes()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string ToString()
+        {
+            return string.Format("GOTO #{0};", Offset);
+        }
+    }
+
+    public class AndCommand : ICommand
+    {
+        public int Index { get; set; }
+        public int ResultVariable { get; set; }
+        public int LhsVariable { get; set; }
+        public int RhsVariable { get; set; }
+
+        public AndCommand(CommandToken token)
+        {
+            Index = token.Index;
+            ResultVariable = token.Params[0];
+            LhsVariable = token.Params[1];
+            RhsVariable = token.Params[2];
+        }
+
+        public byte[] ToBytes()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string ToString()
+        {
+            return string.Format("V[{0}] = V[{1}] && V[{2}];", ResultVariable, LhsVariable, RhsVariable);
+        }
+    }
+
+    public class JumpUnlessCommand : ICommand
+    {
+        public int Index { get; set; }
+        public int Offset { get; set; }
+        public int ConditionVariable { get; set; }
+
+        public JumpUnlessCommand(CommandToken token)
+        {
+            Index = token.Index;
+            ConditionVariable = 0;
+            Offset = token.Params[0];
+        }
+
+        public byte[] ToBytes()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string ToString()
+        {
+            return string.Format("if(! V[{0}]) {{\n  GOTO #{1}\n}}", ConditionVariable, Offset);
+        }
+    }
+
+
+    public class GreaterEqualsCommand : ICommand
+    {
+        public int Index { get; set; }
+        public int ResultVariable { get; set; }
+        public int LhsVariable { get; set; }
+        public int RhsVariable { get; set; }
+
+        public GreaterEqualsCommand(CommandToken token)
+        {
+            Index = token.Index;
+            ResultVariable = token.Params[0];
+            LhsVariable = token.Params[1];
+            RhsVariable = token.Params[2];
+        }
+
+        public byte[] ToBytes()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string ToString()
+        {
+            return string.Format("V[{0}] = V[{1}] >= V[{2}];", ResultVariable, LhsVariable, RhsVariable);
+        }
+    }
+
+
+    public class AddCommand : ICommand
+    {
+        public int Index { get; set; }
+        public int ResultVariable { get; set; }
+        public int LhsVariable { get; set; }
+        public int RhsVariable { get; set; }
+
+        public AddCommand(CommandToken token)
+        {
+            Index = token.Index;
+            ResultVariable = token.Params[0];
+            LhsVariable = token.Params[1];
+            RhsVariable = token.Params[2];
+        }
+
+        public byte[] ToBytes()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string ToString()
+        {
+            return string.Format("V[{0}] = V[{1}] + V[{2}];", ResultVariable, LhsVariable, RhsVariable);
+        }
+    }
+
+    public class AssignCommand : ICommand
+    {
+        public int Index { get; set; }
+        public int ResultVariable { get; set; }
+        public int Variable { get; set; }
+
+        public AssignCommand(CommandToken token)
+        {
+            Index = token.Index;
+            ResultVariable = token.Params[0];
+            Variable = token.Params[1];
+        }
+
+        public byte[] ToBytes()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override string ToString()
+        {
+            return string.Format("V[{0}] = V[{1}];", ResultVariable, Variable);
+        }
     }
 
     public class TextCommand : ICommand
     {
         public int Index { get; set; }
+
+        /// <summary>
+        /// Gets or sets the index of the text to play. <see cref="GscFile.Strings"/>
+        /// </summary>
         public int TextIndex { get; set; }
+
+        /// <summary>
+        /// Gets or sets the index of the voice file to play.
+        /// </summary>
         public int VoiceIndex { get; set; }
 
         public TextCommand(int textIndex, int voiceIndex = 0)
@@ -67,13 +233,30 @@ namespace RaiLTools.RScript
         {
             throw new NotImplementedException();
         }
+
+        public override string ToString()
+        {
+            return string.Format("Text({0}, {1})", TextIndex, VoiceIndex);
+        }
     }
 
     public class ImageCommitCommand : ICommand
     {
         public int Index { get; set; }
+
+        /// <summary>
+        /// Gets or sets the type of transition. Always has to preceded by a <see cref="ImageContextCommand"/>.
+        /// </summary>
         public TransitionType Transition { get; set; }
+
+        /// <summary>
+        /// Number of steps the transition should take.
+        /// </summary>
         public int StepCount { get; set; }
+
+        /// <summary>
+        /// Duration of each step in the transition. (ms?)
+        /// </summary>
         public int StepDuration { get; set; }
 
         public ImageCommitCommand(TransitionType transition, int transitionStepCount, int transitionStepDuration)
@@ -95,6 +278,11 @@ namespace RaiLTools.RScript
         {
             throw new NotImplementedException();
         }
+
+        public override string ToString()
+        {
+            return string.Format("}} [{0}, {1}, {2}]", Transition, StepCount, StepDuration);
+        }
     }
 
     public class BackgroundCommand : ICommand
@@ -115,6 +303,11 @@ namespace RaiLTools.RScript
         public byte[] ToBytes()
         {
             throw new NotImplementedException();
+        }
+
+        public override string ToString()
+        {
+            return string.Format("  BACKGROUND({0});", ImageIndex);
         }
     }
 
@@ -166,6 +359,11 @@ namespace RaiLTools.RScript
         {
             throw new NotImplementedException();
         }
+
+        public override string ToString()
+        {
+            return string.Format("  {0} SPRITE {1} {2}", Enum.GetName(typeof(SpriteAction), Action).ToUpper(), Position, SpriteIndex);
+        }
     }
 
     public class ImageContextCommand : ICommand
@@ -180,6 +378,11 @@ namespace RaiLTools.RScript
         public byte[] ToBytes()
         {
             throw new NotImplementedException();
+        }
+
+        public override string ToString()
+        {
+            return string.Format("IMAGE {{");
         }
     }
 }
