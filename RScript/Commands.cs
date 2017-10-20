@@ -198,7 +198,7 @@ namespace RaiLTools.RScript
 
         public override string ToString()
         {
-            return string.Format("V[{0}] = V[{1}];", ResultVariable, Variable);
+            return string.Format("V[{0}] = V[{1}];", ResultVariable, Variable   );
         }
     }
 

@@ -23,7 +23,9 @@ namespace RaiLTools.RScript
             Add = 0xAA00,
             Assign = 0xF100,
             GreaterEquals = 0x5400,
-            And = 0x3500
+            And = 0x3500,
+            ReadScenario = 0xC8,
+            Equals = 0x4800
         }
 
         private CommandTokenizer _Tokenizer;
