@@ -28,15 +28,15 @@ namespace railiar
                 Console.WriteLine($"railiar.exe file1 file2 file3...");
                 Console.WriteLine($"");
                 Console.WriteLine($"*.xfl => Extract archive into folder with same name");
+                Console.WriteLine($"*.lwg => Extract canvas into folder with same name");
                 Console.WriteLine($"*.wcg => Convert to *.png");
-                Console.WriteLine($"*.gsc => Convert to *.txt for translation");
-                Console.WriteLine($"*.txt => Convert back to *.gsc");
                 Console.WriteLine($"*.png => Convert to *.wcg");
                 Console.WriteLine($"*.jpg => Convert to *.wcg");
                 Console.WriteLine($"*.bmp => Convert to *.wcg");
+                Console.WriteLine($"*.gsc => Convert to *.txt for translation");
+                Console.WriteLine($"*.txt => Convert back to *.gsc");
                 Console.WriteLine($"*.wav => Extract playable *.ogg if detected");
-                Console.WriteLine($"Directory => Pack to *.xfl");
-
+                Console.WriteLine($"Directory => Pack to *.xfl or *.lwg");
                 return;
             }
 
@@ -57,6 +57,13 @@ namespace railiar
                 {
                     // -> Convert to PNG
                     WCG2PNG(path, target + ".png");
+                }
+                else if (path.EndsWith(".lwg"))
+                {
+                    var canvas = LwgCanvas.FromFile(path);
+                    canvas.ExportToDirectory(target);
+
+                    Console.WriteLine("Extracted {0} to {1}", Path.GetFileName(path), target);
                 }
                 else if (path.EndsWith(".xfl"))
                 {
