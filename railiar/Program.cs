@@ -25,7 +25,7 @@ namespace railiar
         {
             if (args.Length == 0 || args.Contains("-h"))
             {
-                Console.WriteLine($"railtools.exe file1 file2 file3...");
+                Console.WriteLine($"railiar.exe file1 file2 file3...");
                 Console.WriteLine($"");
                 Console.WriteLine($"*.xfl => Extract archive into folder with same name");
                 Console.WriteLine($"*.wcg => Convert to *.png");
