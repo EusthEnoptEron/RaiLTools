@@ -31,9 +31,9 @@ namespace railiar
                 Console.WriteLine($"*.wcg => Convert to *.png");
                 Console.WriteLine($"*.gsc => Convert to *.txt for translation");
                 Console.WriteLine($"*.txt => Convert back to *.gsc");
-                Console.WriteLine($"*.png => Convert to *.gsc");
-                Console.WriteLine($"*.jpg => Convert to *.gsc");
-                Console.WriteLine($"*.bmp => Convert to *.gsc");
+                Console.WriteLine($"*.png => Convert to *.wcg");
+                Console.WriteLine($"*.jpg => Convert to *.wcg");
+                Console.WriteLine($"*.bmp => Convert to *.wcg");
                 Console.WriteLine($"*.wav => Extract playable *.ogg if detected");
                 Console.WriteLine($"Directory => Pack to *.xfl");
 
