@@ -23,6 +23,23 @@ namespace railiar
 
         static void Main(string[] args)
         {
+            if (args.Length == 0 || args.Contains("-h"))
+            {
+                Console.WriteLine($"railtools.exe file1 file2 file3...");
+                Console.WriteLine($"");
+                Console.WriteLine($"*.xfl => Extract archive into folder with same name");
+                Console.WriteLine($"*.wcg => Convert to *.png");
+                Console.WriteLine($"*.gsc => Convert to *.txt for translation");
+                Console.WriteLine($"*.txt => Convert back to *.gsc");
+                Console.WriteLine($"*.png => Convert to *.gsc");
+                Console.WriteLine($"*.jpg => Convert to *.gsc");
+                Console.WriteLine($"*.bmp => Convert to *.gsc");
+                Console.WriteLine($"*.wav => Extract playable *.ogg if detected");
+                Console.WriteLine($"Directory => Pack to *.xfl");
+
+                return;
+            }
+
             foreach (var path in args)
             {
                 DealWithFile(Path.GetFullPath(path));
