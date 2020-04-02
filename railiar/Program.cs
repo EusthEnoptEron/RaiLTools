@@ -1,14 +1,8 @@
-﻿using RaiLTools;
-using RaiLTools.RScript;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+using RaiLTools;
 
 namespace railiar
 {
@@ -20,18 +14,19 @@ namespace railiar
         const int NEW_WIDTH = 1280;
         const int NEW_HEIGHT = 960;
 
+        static readonly byte[] OGG_MAGIC = {0x4F, 0x67, 0x67, 0x53};
+
+        const int OGG_OFFSET = 66;
         //const int NEW_WIDTH = 800;
         //const int NEW_HEIGHT = 600;
 
 
         static void Main(string[] args)
         {
-            //args = new string[] { @"D:\Visual Novels\Binaries\raiL\紅殻町博物誌\scr\1101.gsc" };
-            //new CommandTranslator(GscFile.FromFile(args[0])).GetCommands().ToList();
-            //foreach (var path in args)
-            //{
-            //    DealWithFile(Path.GetFullPath(path));
-            //}
+            foreach (var path in args)
+            {
+                DealWithFile(Path.GetFullPath(path));
+            }
         }
 
         static void DealWithFile(string path)
@@ -75,11 +70,14 @@ namespace railiar
                 {
                     PNG2WCG(path, target + ".wcg");
                 }
+                else if (path.EndsWith(".wav"))
+                {
+                    WAV2OGG(path);
+                }
                 else
                 {
                     Console.Error.WriteLine("Unsupported file format.");
                 }
-
             }
             else if (Directory.Exists(path))
             {
@@ -109,132 +107,16 @@ namespace railiar
             }
         }
 
-        static void Main2(string[] args)
-        {
-            string from = @"D:\Novels\raiL\信天翁航海録\grpo_translated";
-            string to   = @"D:\Novels\raiL\信天翁航海録\grpo";
-
-            //PNG2WCG(@"C:\Users\Simon\Pictures\Saya\CGSY31.png", @"D:\Novels\raiL\信天翁航海録\grpe\6105.wcg");
-
-            //var canvas = LwgCanvas.FromFile(@"D:\Novels\raiL\信天翁航海録\grps-sources\excompane.lwg");
-            //canvas.ExportToDirectory(@"D:\Novels\raiL\信天翁航海録\grps-translated\excompane", true);
-
-            //var canvas2 = LwgCanvas.FromDirectory(@"D:\Novels\raiL\信天翁航海録\grps-translated\excompane", true);
-            //canvas2.Save(@"D:\Novels\raiL\信天翁航海録\grps\excompane.lwg");
-
-
-
-            //canvas.ExtractToDirectory("...");            
-            //canvas.ImportDictionary("...");
-
-
-           
-            // EXTRACT GSCs
-            //foreach (var file in Directory.GetFiles(@"D:\Novels\raiL\信天翁航海録\scr-sources"))
-            //{
-            //    string target = @"D:\Novels\raiL\信天翁航海録\scr-translated\" + Path.GetFileNameWithoutExtension(file) + ".txt";
-            //    var transFile = TransFile.FromGSC(file);
-            //    transFile.Save(target);
-            //}
-
-            // REPACK THEM
-            //foreach (var file in Directory.GetFiles(@"D:\Novels\raiL\信天翁航海録\scr-translated"))
-            //{
-            //    var reference = @"D:\Novels\raiL\信天翁航海録\scr-sources\" + Path.GetFileNameWithoutExtension(file) + ".gsc";
-            //    var target = @"D:\Novels\raiL\信天翁航海録\scr\" + Path.GetFileNameWithoutExtension(file) + ".gsc";
-
-            //    var gscFile = TransFile.FromFile(file).ToGSC(reference);
-
-            //    gscFile.Save(target);
-            //}
-
-           // PNG2WCG(
-           //     @"D:\Novels\raiL\信天翁航海録\grpe~.xfl\0001.jpg",
-           //     @"D:\Novels\raiL\信天翁航海録\grpe\0001.wcg"
-           // );
-           // PNG2WCG(
-           //     @"D:\Novels\raiL\信天翁航海録\grpe~.xfl\0002.jpg",
-           //     @"D:\Novels\raiL\信天翁航海録\grpe\0002.wcg"
-           //);
-
-            // Patch
-            //PatchCanvas(
-            //    @"D:\Novels\raiL\信天翁航海録\grps-sources\compane.lwg"
-            //    , @"D:\Novels\raiL\信天翁航海録\grps-edited\compane.lwg"
-            //    , @"D:\Novels\raiL\信天翁航海録\grps\compane.lwg"
-            //);
-
-            //PatchCanvas(
-            //    @"D:\Novels\raiL\信天翁航海録\grps-sources\confscrn.lwg"
-            //    , @"D:\Novels\raiL\信天翁航海録\grps-edited\confscrn.lwg"
-            //    , @"D:\Novels\raiL\信天翁航海録\grps\confscrn.lwg"
-            //);
-
-            //PatchCanvas(
-            //    @"D:\Novels\raiL\信天翁航海録\grps-sources\excompane.lwg"
-            //    , @"D:\Novels\raiL\信天翁航海録\grps-edited\excompane.lwg"
-            //    , @"D:\Novels\raiL\信天翁航海録\grps\excompane.lwg"
-            //);
-
-            //PatchCanvas(
-            //  @"D:\Novels\raiL\信天翁航海録\grps-sources\fontcompane.lwg"
-            //      , @"D:\Novels\raiL\信天翁航海録\grps-edited\fontcompane.lwg"
-            //      , @"D:\Novels\raiL\信天翁航海録\grps\fontcompane.lwg"
-            //);
-
-            //PatchCanvas(
-            //  @"D:\Novels\raiL\信天翁航海録\grps-sources\tbox01.lwg"
-            //      , @"D:\Novels\raiL\信天翁航海録\grps-edited\tbox01.lwg"
-            //      , @"D:\Novels\raiL\信天翁航海録\grps\tbox01.lwg"
-            //);
-
-            //PatchCanvas(
-            //  @"D:\Novels\raiL\信天翁航海録\grps-sources\logbar_h.lwg"
-            //      , @"D:\Novels\raiL\信天翁航海録\grps-edited\logbar_h.lwg"
-            //      , @"D:\Novels\raiL\信天翁航海録\grps\logbar_h.lwg"
-            //);
-
-            //PatchCanvas(
-            //  @"D:\Novels\raiL\信天翁航海録\grps-sources\logbar_v.lwg"
-            //      , @"D:\Novels\raiL\信天翁航海録\grps-edited\logbar_v.lwg"
-            //      , @"D:\Novels\raiL\信天翁航海録\grps\logbar_v.lwg"
-            //);
-
-
-            //Parallel.ForEach(Directory.GetFiles(@"D:\Novels\raiL\信天翁航海録\grpo_bu-resized", "*.png"), (file) =>
-            //{
-            //    var output = @"D:\Novels\raiL\信天翁航海録\grpo_bu\" + Path.GetFileNameWithoutExtension(file) + ".wcg";
-            //    PNG2WCG(file, output);
-            //});
-
-            //foreach (var file in Directory.GetFiles(from, "*.png"))
-            //{
-            //    PNG2WCG(file, Path.Combine(to, Path.GetFileNameWithoutExtension(file) + ".wcg"));
-            //} 
-
-
-
-
-            //string originalFile = @"D:\Novels\raiL\信天翁航海録\grpo\0001_orig.wcg";
-            //originalFile = @"D:\Novels\raiL\信天翁航海録\grpe\0014.wcg";
-            //WCG2PNG(originalFile, "step1.png");
-            //PNG2WCG("step1.png", "step2.wcg");
-            //WCG2PNG("step2.wcg", "step3.png");
-
-            //PNG2WCG("step3.png", @"D:\Novels\raiL\信天翁航海録\grpo\0001.wcg");
-
-        }
-
         static void PatchCanvas(string srcCanvas, string srcFolder, string dstCanvas)
         {
             Console.WriteLine("Patching {0}...", Path.GetFileName(srcCanvas));
 
-            double scale = NEW_WIDTH / (double)OLD_WIDTH;
+            double scale = NEW_WIDTH / (double) OLD_WIDTH;
 
             var canvas = new LwgCanvas(srcCanvas);
 
-            canvas.Width = (int)(canvas.Width * scale);
-            canvas.Height = (int)(canvas.Height * scale);
+            canvas.Width = (int) (canvas.Width * scale);
+            canvas.Height = (int) (canvas.Height * scale);
 
             foreach (var file in Directory.GetFiles(srcFolder))
             {
@@ -251,8 +133,8 @@ namespace railiar
 
                 if (item.Flag == 0) item.Flag = byte.MaxValue;
 
-                item.X = (int)(item.X * scale);
-                item.Y = (int)(item.Y * scale);
+                item.X = (int) (item.X * scale);
+                item.Y = (int) (item.Y * scale);
             }
 
             canvas.Save(dstCanvas);
@@ -278,6 +160,72 @@ namespace railiar
             {
                 wcg.Save(to);
             }
+        }
+
+        static void WAV2OGG(string path)
+        {
+            Console.WriteLine($"Processing {Path.GetFileName(path)}...");
+            using (var streamIn = File.OpenRead(path))
+            using (var reader = new BinaryReader(streamIn))
+            {
+                streamIn.Position = OGG_OFFSET;
+                var bytes = reader.ReadBytes(4);
+
+                if (bytes.SequenceEqual(OGG_MAGIC))
+                {
+                    Console.WriteLine($"Ogg Vorbis header found! Extracting...");
+
+                    // Embedded Ogg Vorbis
+                    streamIn.Position = OGG_OFFSET;
+
+                    using (var streamOut = File.OpenWrite(Path.ChangeExtension(path, ".ogg")))
+                    {
+                        streamOut.SetLength(0);
+
+                        while (TryCopyPage(streamIn, streamOut))
+                        {
+                        }
+                    }
+                }
+            }
+        }
+
+        static bool TryCopyPage(Stream streamIn, Stream streamOut)
+        {
+            var startPos = streamIn.Position;
+
+            // Skip to segment table
+            if (streamIn.Seek(26, SeekOrigin.Current) == startPos)
+            {
+                return false;
+            }
+
+            var segmentCount = streamIn.ReadByte();
+
+            if (segmentCount == -1)
+            {
+                return false;
+            }
+
+            var segmentLengths = new byte[segmentCount];
+            streamIn.Read(segmentLengths, 0, segmentCount);
+
+            var offset = segmentLengths.Sum(b => b);
+            var length = (int) (streamIn.Position - startPos + offset);
+
+            if (segmentCount == 1 && offset == 0)
+            {
+                // Skip this packet.
+                streamIn.Seek(offset, SeekOrigin.Current);
+            }
+            else
+            {
+                // Copy to output
+                streamIn.Position = startPos;
+                streamIn.CopyStream(streamOut, length);
+            }
+
+            return true;
         }
     }
 }
